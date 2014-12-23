@@ -1,0 +1,60 @@
+trainingdata <- read.csv("data/training.csv")
+testdata <- read.csv("data/sorted_test.csv")
+soil_properties <- c("Ca", "P", "pH", "SOC", "Sand")
+ 
+# CO2_bands <- 2656:2670
+names(trainingdata)[2656:2670]
+ 
+# take the first derivatives to smoothe out the measurement noise
+# training data
+MIR_measurements <- trainingdata[, 2:2655]
+MIR_DER <- MIR_measurements- cbind(NA, MIR_measurements)[, -(dim(MIR_measurements)[2]+1)]
+X_train <- cbind(trainingdata[, 3580:3595], MIR_DER[,-1])
+MIR_measurements <- trainingdata[, 2671:3579]
+MIR_DER <- MIR_measurements- cbind(NA, MIR_measurements)[, -(dim(MIR_measurements)[2]+1)]
+X_train <- cbind(X_train, MIR_DER[, -1])
+ 
+# testing data
+MIR_measurements <- testdata[, 2:2655]
+MIR_DER <- MIR_measurements- cbind(NA, MIR_measurements)[, -(dim(MIR_measurements)[2]+1)]
+X_test <- cbind(testdata[, 3580:3595], MIR_DER[,-1])
+MIR_measurements <- testdata[, 2671:3579]
+MIR_DER <- MIR_measurements- cbind(NA, MIR_measurements)[, -(dim(MIR_measurements)[2]+1)]
+X_test <- cbind(X_test, MIR_DER[, -1])
+
+n<-dim(X_train)[[1]]
+p<-dim(X_train)[[2]]
+
+## Prepare a training and a test set ##
+ntrain <- round(n*0.7) # number of training examples
+tindex <- sample(n,ntrain) # indices of training samples
+xtrain <- X_train[tindex,]
+xtest <- X_train[-tindex,]
+
+istrain=rep(0,n)
+istrain[tindex]=1
+
+ytrain<-rep(NA, dim(xtrain)[1])
+for (soil_property in soil_properties) { ytrain<- cbind(ytrain,trainingdata[tindex,soil_property])}
+ytrain <-ytrain[,-(1)]
+
+ytest<-rep(NA, dim(xtest)[1])
+for (soil_property in soil_properties) { ytest<- cbind(ytest,trainingdata[-tindex,soil_property])}
+ytest <-ytest[,-(1)]
+
+t<-factor(xtrain$Depth)
+xtrain$Depth<-as.numeric(t)
+t<-factor(xtest$Depth)
+xtest$Depth<-as.numeric(t)
+
+
+pre<-dim(xtrain[[1]])
+model<-dim(xtrain[[1]])
+
+for(n in 1:5){
+p<-ytrain[,n]
+m<-svm(xtrain,p,epsilon=0.05)
+model<-cbind(model,m)
+pred<-predict(m,xtest)
+pre<- cbind(pre,as.matrix(pred))
+}
