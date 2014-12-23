@@ -1,2 +1,31 @@
-*SVM on Forest Cover Data*
+#*SVM on Forest Cover Data*
+# import data from file
+train <-readcsv("train.csv")
+test <-readcsv("test.csv")
+
+# read and install packages e1071, MASS, sampling
+
+# Sample the training data
+x_num = NROW(train)
+y_num = NCOL(train)
+
+index <- sample(train, 7000)
+mysample <- train[index,]
+
+# Drop the empty columns "Soil_Type7" and "Soil_Type15"
+
+drops <- c("Soil_Type7","SOil_Type15")
+mysample <- mysample[, !(names(mysamle) %in% drops)]
+
+#Run Support Vector Machine
+#Optimize Support Vector Machine Cost and Gamma values
+# Ideal Cost and Gamma at gamma = 2^-19 and cost = 8
+
+m <- svm(Cover_Type~., data = mysample, gamma = 2^-19, cost = 8)
+
+#Create Prediction File
+
+pred <- predict(m, test)
+
+write.csv(pred,  file = "ForestCoverPredictionWithSVM.csv",row.names=FALSE, na="")
 
