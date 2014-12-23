@@ -1,7 +1,7 @@
 #*SVM on Forest Cover Data*
 # import data from file
-train <-readcsv("train.csv")
-test <-readcsv("test.csv")
+train <-read.csv("train.csv")
+test <-read.csv("test.csv")
 
 # read and install packages e1071, MASS, sampling
 
