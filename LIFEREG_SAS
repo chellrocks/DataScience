@@ -1,0 +1,14 @@
+/* SAS code for LIFEREG Surv Data */
+
+LIBNAME SURV 'C:\Users\PhebePolk\Documents\Surv\'; /*Modify to your data location*/
+run;
+
+PROC LIFETEST DATA = SURV PLOTS=(S) METHOD=(km);
+  TIME DAYS*DEATH(0);
+  STRATA STAGET;
+RUN;
+
+PROC LIFETEST DATA = SURV PLOTS=(S) METHOD=(km);
+  TIME DAYS*DEATH(1);
+  STRATA STAGET;
+RUN;
