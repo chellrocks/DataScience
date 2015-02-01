@@ -1,5 +1,7 @@
 /* SAS code for LIFEREG Surv Data */
 
+
+/* Reproduces Charts from Textbook*/
 LIBNAME SURV 'C:\Users\PhebePolk\Documents\Surv\'; /*Modify to your data location*/
 run;
 
@@ -7,8 +9,18 @@ PROC LIFETEST DATA = SURV PLOTS=(S) METHOD=(km);
   TIME DAYS*DEATH(0);
   STRATA STAGET;
 RUN;
+/* Produces Kaplan-Meier Survival Times for Small Vs Large Tumor Cancers*/
+/* Change Staget to Stagen for Early Vs Late Cancers*/
+/* Change Staget to Hist for Squamous Vs Other */
+
 
 PROC LIFETEST DATA = SURV PLOTS=(S) METHOD=(km);
   TIME DAYS*DEATH(1);
   STRATA STAGET;
 RUN;
+
+PROC FREQ DATA = SURV;
+  TABLES DEATH*(STAGET PERFBL TREAT POINTF) / NOFREQ NOPERCENT NOROW;
+RUN;
+
+
