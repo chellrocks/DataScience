@@ -1,26 +1,31 @@
 /* SAS code for LIFEREG Surv Data */
 
-
 /* Reproduces Charts from Textbook*/
 LIBNAME SURV 'C:\Users\PhebePolk\Documents\Surv\'; /*Modify to your data location*/
 run;
 
-PROC LIFETEST DATA = SURV PLOTS=(S) METHOD=(km);
+PROC LIFETEST DATA = SURV PLOTS=(S, LS, P, H) METHOD=(km);
   TIME DAYS*DEATH(0);
   STRATA STAGET;
 RUN;
-/* Produces Kaplan-Meier Survival Times for Small Vs Large Tumor Cancers*/
+/* Produces Plot of Kaplan-Meier Survival Times (S) and Log of Survival (LS) for Small Vs Large Tumor Cancers*/
+/* Produces Plot of Probability Density Function (P) and Cumulative Density Function (H) */
 /* Change Staget to Stagen for Early Vs Late Cancers*/
 /* Change Staget to Hist for Squamous Vs Other */
-
-
-PROC LIFETEST DATA = SURV PLOTS=(S) METHOD=(km);
-  TIME DAYS*DEATH(1);
-  STRATA STAGET;
-RUN;
 
 PROC FREQ DATA = SURV;
   TABLES DEATH*(STAGET PERFBL TREAT POINTF) / NOFREQ NOPERCENT NOROW;
 RUN;
+
+PROC LIFEREG DATA = SURV;
+  MODEL DAYS*DEATH(0)= STAGET PERFBL TREAT POINTF /d WEIBULL;
+RUN;
+/* Creates a regression model that fits a Weibull Distribution to the Survival Data */ 
+
+PROC PHREG DATA=SURV;
+  MODEL DAYS*DEATH(0)= STAGET PERFBL TREAT POINTF;
+RUN;
+/* Produces Cox's Model of Data */
+/* Assumes the Ratio of the Hazard function for the two groups is constant and time independent */
 
 
