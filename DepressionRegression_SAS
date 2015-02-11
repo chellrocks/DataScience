@@ -12,7 +12,36 @@ PROC CORR DATA= DEPRESSION;
 VAR CESD HEALTH SEX1 AGE EDUCAT INCOME;
 RUN;
 
+/* Displays Mean Std Deviation of Depression Data */
+/* Displays COrrelation Matrix for Depression Data */
+/* Correlations above 0.3 indicate relationships between variables */
+
+
 PROC CANCORR DATA = DEPRESSION OUT= CANMOD;
 VAR CESD HEALTH;
 WITH SEX AGE EDUCAT INCOME;
 RUN;
+
+/* Creates Multiple Regression Model of CESD and HEALTH from the Variables SEX AGE EDUCAT INCOME */
+/* Stepwise Forwards or Backwards methods should also be used to select variables */
+
+PROC STEPWISE;
+MODEL CESD = SEX AGE EDUCAT INCOME;
+RUN;
+
+PROC STEPWISE;
+MODEL HEALTH = SEX AGE EDUCAT INCOME;
+RUN;
+
+/* All combinations of data columns should be checked */
+
+/* Other Models */
+PROC CANCORR DATA = DEPRESSION OUT = GENMOD;
+VAR SEX
+WITH AGE MARITAL EDUCAT EMPLOY INCOME;
+RUN;
+
+
+
+
+/* Discriminant Analysis */
